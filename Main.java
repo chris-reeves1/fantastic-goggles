@@ -333,3 +333,91 @@ public class write {
     }   
 }
 
+
+package abstractsInterfaces;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Selecting {
+    private static final String URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1";
+    private static final String USER = "sa";
+    private static final String PASS = ""; 
+    public static void main(String[] args) throws Exception {
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASS)){
+        createTable(conn);   
+
+        insertCustomer(conn, "John Doe", "New York");
+        insertCustomer(conn, "Jane Smith", "Los Angeles");
+        insertCustomer(conn, "Mike Johnson", "Chicago");
+        
+        for (Customer c : selectAll(conn)) {
+            System.out.println(c);
+
+        }}}
+
+static void createTable(Connection conn) throws Exception{
+        try (Statement st = conn.createStatement()){
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS customers (
+                id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(100) NOT NULL,
+                city VARCHAR(100) NOT NULL 
+                )
+                """);    
+}    
+}
+
+static long insertCustomer(Connection conn, String name, String city) throws Exception {
+    String sql = "INSERT INTO customers (name, city) VALUES (?, ?)";{
+    try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+        ps.setString(1, name);
+        ps.setString(2, city);
+        ps.executeUpdate();
+        try(ResultSet rs = ps.getGeneratedKeys()){
+            if (rs.next()) {
+                return rs.getLong(1);
+            } else {
+                throw new SQLException("Inserting customer failed, no ID obtained.");
+            }
+        }
+    }
+}
+}   
+
+// select all method
+    static List<Customer> selectAll(Connection conn) throws Exception {
+        String sql = "SELECT id, name, city FROM customers ORDER by id";
+        try(PreparedStatement ps = conn.prepareStatement(sql);){
+            ResultSet rs = ps.executeQuery();
+            List<Customer> outlist = new ArrayList<>();
+            while (rs.next()){outlist.add(customerMaker(rs));
+            }
+            return outlist;
+        }
+    }
+
+// helpers
+    static Customer customerMaker(ResultSet rs) throws Exception {
+        return new Customer(rs.getLong("id"), rs.getString("name"), rs.getString("city"));
+    }
+}
+
+class Customer {
+    final long id;
+    final String name;
+    final String city;
+
+    public Customer(long id, String name, String city) {
+        this.id = id;
+        this.name = name;
+        this.city = city;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{id=" + id + ", name='" + name + "', city='" + city + "'}";
+    }
+}
+
