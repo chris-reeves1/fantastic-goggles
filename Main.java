@@ -421,3 +421,8 @@ class Customer {
     }
 }
 
+
+// TODO:
+
+//tidy up (combine table + data into 1 method)
+//select all by city. (WHERE)
