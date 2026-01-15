@@ -1,0 +1,228 @@
+package abstractsInterfaces;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.function.Consumer;
+import java.util.function.IntBinaryOperator;
+import java.util.function.IntUnaryOperator;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class Main {
+    private static  boolean running = true;
+public static void main(String[] args) throws InterruptedException {
+
+            Thread worker = new Thread(() -> {
+                while (running) {
+                    // Busy-wait loop (add a tiny pause so it doesn't hammer the CPU)
+                    //Thread.onSpinWait(); // Java 9+ (safe to remove if on Java 8)
+                }
+                System.out.println("Thread stopped.");
+            });
+            worker.start();
+            //Thread.sleep(10_000);
+            running = false;
+            //worker.join(); // wait for worker to finish so program exits cleanly
+        }
+    }
+    
+
+
+
+
+
+    //     //boolean running = true;
+//     // volatile example
+//     new Thread(() -> {
+//         while (running) {
+//         // Busy-wait loop
+//     }
+//     System.out.println("Thread stopped.");
+// }).start();
+
+// try {Thread.sleep(10000);} catch (InterruptedException e) {}
+//     //running = false;
+
+//     volatile boolean running = true;
+// }}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //BrokenCounter counter = new BrokenCounter();
+//     SynchronizedCounter counter = new SynchronizedCounter();
+//     int threads = 8;
+//    int repeats = 50_000;
+
+//    List<Thread> list = new ArrayList<>();
+//    for (int i = 0; i < threads; i++){
+//        Thread t = new Thread(
+//            () -> {
+//                for (int r = 0; r < repeats; r++)counter.increment();
+//            }
+//        );
+//        list.add(t);
+//        t.start(); 
+//    }
+//    for (Thread t : list) t.join();
+//    System.out.println("Expected: 400000" + "actual successful ops = " + counter.value());
+
+
+
+
+// }}
+
+// class BrokenCounter {
+//     private int count = 0;
+//     void increment() { count = count + 1; } 
+//     int value() { return count; }
+// }
+
+// class SynchronizedCounter {
+//     private int count = 0;
+//     synchronized void increment() { count = count + 1; } 
+//     synchronized int value() { return count; }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//     Thread a = new Thread(new Worker("A", 20));
+//     Thread b = new Thread(new Worker("B", 20));
+
+//     a.start();
+//     b.start();
+
+// }}
+
+// class Worker implements Runnable{
+//     String name;
+//     int times;
+
+//     public Worker(String name, int times){
+//         this.name = name;
+//         this.times = times;
+//     }
+
+//     @Override
+//     public void run(){
+//             for (int i = 0; i < times; i++){
+//                 System.out.println("worker" + name + i);
+//                 mySleep(1000);
+//             }
+//     }
+//    void mySleep(int ms){
+//         try {
+//             Thread.sleep(ms);
+//         } catch (InterruptedException e){
+//             System.out.println("[" + name + "] interrupted");
+//         }
+// }}
+
+
+    // Thread deamonExample = new Thread(() -> {
+    //     try {
+    //         while (true){
+    //             System.out.println("[Deamon] running in background...");
+    //             Thread.sleep(10000000);
+    //         }
+    //     } catch (InterruptedException e){
+    //         System.out.println("[Deamon] interrupted");
+    //     }
+    // });
+
+    
+
+    // // extedning thread with run - rearly used.
+    // Thread thread1 = new Thread(){@Override public void run()
+    //     {System.out.println("task form thread1");}};
+
+    // Runnable task = () -> {
+    //     System.out.println("task from thread2");
+    // };
+    // Thread thread2 = new Thread(task);
+
+
+    // deamonExample.setDaemon(true);
+    // deamonExample.start();
+    // thread1.start();
+    // thread2.start();
+
+    // thread1.join(); // wait for thread1 to finish
+    // thread2.join(); // wait for thread2 to finish
+
+
+
+    // System.out.println("[Main] all threads finished");
+
+    // }}
+
+
+/*
+Threads:
+- A pathway of execution in a program.
+- Resources are shared among threads.
+- Same memory space.
+
+Why use?
+- Responsiveness - keeping UI's responsive, keep code flowing. 
+- heavy I/O operations - file handling, network calls etc - throw into a background thread.
+- Threads can wait. 
+
+- parallelism - perform multiple tasks simultaneously.
+- concurrency - virtually simultaneous tasks.
+
+- problems:
+    - race conditions: uncoordianated access to shared resources.
+    - deadlocks: 2 or more threads waiting on each other indefinitely.
+    - visability issues: changes made by one thread not visible to others immediately.
+
+
+    Main thread:
+        - Create new threads
+        - Errors here take down all threads.
+        - thread.sleep()
+
+        new thread:
+            - started with .start() not .run()
+            - join() - wait for thread to finish.
+            - setPriority() - hint to scheduler.
+            - daemon threads - background tasks. 
+            - synchronization - locks, synchronized blocks/methods, volatile keyword, atomics.
+        
+        
+
+
+
+
+*/
