@@ -254,7 +254,7 @@ Why use?
     </dependencies>
 </project>
 
-
+CREATTAble:
     package abstractsInterfaces;
 import java.sql.*;
 
@@ -277,5 +277,59 @@ public class CreateTable {
             }
     }
 }
+}
+
+WRTIE:
+
+package abstractsInterfaces;
+
+import java.sql.*;
+
+public class write {
+    private static final String URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1";
+    private static final String USER = "sa";
+    private static final String PASS = ""; 
+
+    public static void main(String[] args) throws Exception {
+            try (Connection conn = DriverManager.getConnection(URL, USER, PASS)){
+            createTable(conn);   
+
+            long id1 = insertCustomer(conn, "John Doe", "New York");
+            long id2 = insertCustomer(conn, "Jane Smith", "Los Angeles");
+            long id3 = insertCustomer(conn, "Mike Johnson", "Chicago");
+            
+            System.out.println("Inserted customer IDs: " + id1 + ", " + id2 + ", " + id3);
+
+            }}
+    
+    static void createTable(Connection conn) throws Exception{
+            try (Statement st = conn.createStatement()){
+                st.execute("""
+                    CREATE TABLE IF NOT EXISTS customers (
+                    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                    name VARCHAR(100) NOT NULL,
+                    city VARCHAR(100) NOT NULL 
+                    )
+                    """);
+                   
+
+}    }
+
+    static long insertCustomer(Connection conn, String name, String city) throws Exception {
+        String sql = "INSERT INTO customers (name, city) VALUES (?, ?)";{
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+            ps.setString(1, name);
+            ps.setString(2, city);
+            ps.executeUpdate();
+            try(ResultSet rs = ps.getGeneratedKeys()){
+                if (rs.next()) {
+                    return rs.getLong(1);
+                } else {
+                    throw new SQLException("Inserting customer failed, no ID obtained.");
+                }
+            }
+        }
+    }
+    }   
 }
 
