@@ -333,7 +333,6 @@ public class write {
     }   
 }
 
-
 package abstractsInterfaces;
 
 import java.sql.*;
@@ -426,15 +425,106 @@ class Customer {
 
 //tidy up (combine table + data into 1 method)
 //select all by city. (WHERE)
-
+static List<Customer> selectByCity(Connection conn, String city) throws SQLException {
+    String sql = "SELECT id, name, city FROM customers WHERE city = ? ORDER BY id";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, city);
+        try (ResultSet rs = ps.executeQuery()) {
+            List<Customer> out = new ArrayList<>();
+            while (rs.next()) out.add(customerMaker(rs));
+            return out;
+        }
+    }
+}
 //select by id (single record)
-
+static String selectById(Connection conn, long id) throws SQLException {
+    try (PreparedStatement ps = conn.prepareStatement("SELECT id,name,city FROM customers WHERE id=?")) {
+        ps.setLong(1, id);
+        try (ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? "Customer{id=%d, name='%s', city='%s'}"
+                    .formatted(rs.getLong(1), rs.getString(2), rs.getString(3))
+                    : null;
+        }
+    }
+}
 // update city by id
-
+static int updateCity(Connection conn, long id, String newCity) throws SQLException {
+    try (PreparedStatement ps = conn.prepareStatement("UPDATE customers SET city=? WHERE id=?")) {
+        ps.setString(1, newCity);
+        ps.setLong(2, id);
+        return ps.executeUpdate();
+    }
+}
 // find customer by name
-
+static long findCustomerByName(Connection conn, String name) throws SQLException {
+    String sql = "SELECT id FROM customers WHERE name = ?";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, name);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getLong("id");
+            }
+        }
+    }
+    throw new SQLException("Customer with name " + name + " not found.");
+}
 // delete by id
-
+static int deleteById(Connection conn, long id) throws SQLException {
+    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM customers WHERE id=?")) {
+        ps.setLong(1, id);
+        return ps.executeUpdate();
+    }
+}
 // if time try a batch insert (multiple customers together)
+static void batchInsert(Connection conn, int n) throws SQLException {
+    String sql = "INSERT INTO customers(name, city) VALUES(?, ?)";
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        for (int i = 1; i <= n; i++) {
+            ps.setString(1, "Name" + i);
+            ps.setString(2, (i % 2 == 0) ? "London" : "Paris");
+            ps.addBatch();
+        }
+        // each element corresponds to the number of rows affected by each individual 
+        // statement within the batch
+        int[] res = ps.executeBatch();
+        System.out.println("Inserted " + res.length + " rows in batch.");
+    }
+}
 //    +
 // a transaction with a rollback
+
+
+
+helper count method if needed:
+static long count(Connection conn) throws SQLException {
+    try (PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) FROM customers");
+         ResultSet rs = ps.executeQuery()) { rs.next(); return rs.getLong(1); }
+}
+
+
+transaction:
+
+boolean old = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            try {
+                insertCustomer(conn, "TxUser1", "Rome");
+                insertCustomer(conn, "TxUser2", "Rome");
+                // deliberate failure: violates NOT NULL on 'name'
+                try (PreparedStatement ps = conn.prepareStatement("INSERT INTO customers(name, city) VALUES(?, ?)")) {
+                    ps.setString(1, null); // boom
+                    ps.setString(2, "Rome");
+                    ps.executeUpdate();
+                }
+                conn.commit(); // won't reach
+            } catch (SQLException e) {
+                System.out.println("Error -> ROLLBACK: " + e.getMessage());
+                conn.rollback();
+            } finally {
+                conn.setAutoCommit(old);
+            }
+
+            System.out.println("Rows after rollback: " + count(conn));
+        }
+    }
+// Database is the source of truth - code works around it. 
+// Query data - common and safe.
