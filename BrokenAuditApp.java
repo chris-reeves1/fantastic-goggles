@@ -55,3 +55,24 @@ public class BrokenAuditApp {
         doStuff(); 
     }
 }
+
+
+
+List of improvements needed:
+
+
+
+
+1. Overwriting file. 
+2. timestamp: 
+    - should be per event, not a single timestamp for all events.
+    - Formatting with z +00.00.
+3. Events should be newline separated in the output file.
+4. deal with user 999 - unknown/known flag.
+
+try with resources for file handling
+naming conventions(through out the code)
+remove unnecessary cli stuff
+Remove unused code/clean up.
+fix up the for loop.
+-- break up into more methods. 
