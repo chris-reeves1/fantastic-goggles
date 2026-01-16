@@ -426,3 +426,15 @@ class Customer {
 
 //tidy up (combine table + data into 1 method)
 //select all by city. (WHERE)
+
+//select by id (single record)
+
+// update city by id
+
+// find customer by name
+
+// delete by id
+
+// if time try a batch insert (multiple customers together)
+//    +
+// a transaction with a rollback
